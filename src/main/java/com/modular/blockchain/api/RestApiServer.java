@@ -12,11 +12,21 @@ import com.sun.net.httpserver.HttpHandler;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * REST API server that provides HTTP endpoints to interact with the blockchain
+ */
 public class RestApiServer {
     private final Blockchain blockchain;
     private final TransactionPool transactionPool;
     private final HttpServer server;
 
+    /**
+     * Creates a new REST API server
+     * @param blockchain The blockchain instance to expose
+     * @param transactionPool The transaction pool to expose
+     * @param port The port to listen on
+     * @throws IOException If the server cannot be created
+     */
     public RestApiServer(Blockchain blockchain, TransactionPool transactionPool, int port) throws IOException {
         this.blockchain = blockchain;
         this.transactionPool = transactionPool;
@@ -24,6 +34,9 @@ public class RestApiServer {
         setupEndpoints();
     }
 
+    /**
+     * Sets up the HTTP endpoints for the API server
+     */
     private void setupEndpoints() {
         server.createContext("/chain", new HttpHandler() {
             @Override
@@ -74,16 +87,26 @@ public class RestApiServer {
         });
     }
 
+    /**
+     * Converts the blockchain to a JSON string
+     * @return JSON string representation of the blockchain
+     */
     private String blockchainToJson() {
         // For demo: just return block toString list (user should implement proper JSON serialization)
         List<String> blocks = blockchain.getChain().stream().map(Object::toString).toList();
         return blocks.toString();
     }
 
+    /**
+     * Starts the API server
+     */
     public void start() {
         server.start();
     }
 
+    /**
+     * Stops the API server
+     */
     public void stop() {
         server.stop(0);
     }

@@ -7,6 +7,10 @@ import com.modular.blockchain.transaction.TransactionPool;
 
 import java.util.List;
 
+/**
+ * Represents a miner in the blockchain network that is responsible for creating new blocks
+ * by validating and combining transactions from the transaction pool.
+ */
 public class Miner {
     private final TransactionPool pool;
     private final Blockchain blockchain;
@@ -14,7 +18,15 @@ public class Miner {
     private final String minerId;
     private final int miningThreshold;
 
-
+    /**
+     * Constructs a new Miner instance.
+     *
+     * @param minerId Unique identifier for this miner
+     * @param miningThreshold Minimum number of transactions required to create a block
+     * @param pool Transaction pool to get pending transactions from
+     * @param blockchain Reference to the blockchain
+     * @param consensusEngine Engine used to validate blocks and achieve consensus
+     */
     public Miner(String minerId, int miningThreshold, TransactionPool pool, Blockchain blockchain, ConsensusEngine consensusEngine) {
         this.minerId = minerId;
         this.miningThreshold = miningThreshold;
@@ -23,7 +35,10 @@ public class Miner {
         this.consensusEngine = consensusEngine;
     }
 
-    // Checks the pool and mines a block if enough transactions are present
+    /**
+     * Checks the transaction pool and attempts to mine a new block if enough transactions are present.
+     * The block is only added to the blockchain if it passes consensus validation.
+     */
     public void checkAndMine() {
         List<Transaction> batch = pool.getBatch(miningThreshold);
         if (batch == null || batch.isEmpty()) {
@@ -39,7 +54,12 @@ public class Miner {
         // else: consensus failed, do not add block
     }
 
-    // Assembles a new block from a batch of transactions
+    /**
+     * Assembles a new block from a batch of transactions.
+     *
+     * @param batch List of transactions to include in the block
+     * @return A new Block instance containing the provided transactions
+     */
     public Block assembleBlock(List<Transaction> batch) {
         Block latest = blockchain.getLatestBlock();
         int newIndex = latest.getIndex() + 1;

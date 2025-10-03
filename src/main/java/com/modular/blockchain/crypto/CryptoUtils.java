@@ -3,7 +3,17 @@ package com.modular.blockchain.crypto;
 import java.security.*;
 import java.util.Base64;
 
+/**
+ * Utility class providing cryptographic functions for blockchain operations.
+ * Includes methods for hashing, key pair generation, signing and verification.
+ */
 public class CryptoUtils {
+    /**
+     * Generates SHA-256 hash of input string.
+     * @param input String to be hashed
+     * @return Hexadecimal string representation of hash
+     * @throws RuntimeException if hashing fails
+     */
     public static String sha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -20,6 +30,11 @@ public class CryptoUtils {
         }
     }
 
+    /**
+     * Generates a new RSA key pair.
+     * @return KeyPair containing public and private RSA keys
+     * @throws RuntimeException if key generation fails
+     */
     public static KeyPair generateKeyPair() {
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
@@ -30,6 +45,13 @@ public class CryptoUtils {
         }
     }
 
+    /**
+     * Signs data using RSA private key.
+     * @param data Data to be signed
+     * @param key Private key for signing
+     * @return Signature bytes
+     * @throws RuntimeException if signing fails
+     */
     public static byte[] sign(byte[] data, PrivateKey key) {
         try {
             Signature signer = Signature.getInstance("SHA256withRSA");
@@ -41,6 +63,14 @@ public class CryptoUtils {
         }
     }
 
+    /**
+     * Verifies a signature using RSA public key.
+     * @param data Original data that was signed
+     * @param signature Signature to verify
+     * @param key Public key for verification
+     * @return true if signature is valid, false otherwise
+     * @throws RuntimeException if verification fails
+     */
     public static boolean verify(byte[] data, byte[] signature, PublicKey key) {
         try {
             Signature verifier = Signature.getInstance("SHA256withRSA");
