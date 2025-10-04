@@ -19,7 +19,7 @@ A minimal, modular blockchain skeleton in Java — providing only core interface
 - `Blockchain.java`: Manages a list of blocks and chain difficulty. Handles genesis block creation, block addition, and chain validation. No transaction pool logic present.
 - `BlockHeader.java`: Contains block metadata (index, timestamp, previousHash, merkleRoot, nonce, minerId) for use in block hashing.
 - `BlockUtils.java`: Static helpers for block hash calculation, hash validation, pretty printing, and Merkle root computation (simple concatenated hash).
-- `Miner.java`: Monitors the transaction pool, assembles new blocks, and delegates mining/validation to the consensus engine. Removes included transactions from the pool after successful mining.
+- `Miner.java`: Monitors the transaction pool and periodically attempts to mine new blocks using a scheduled executor. Mining is started/stopped with `startMining(int minutes)` and `stopMining()`. Assembles blocks, delegates mining/validation to the consensus engine, and only adds blocks if consensus is successful. Removes included transactions from the pool after successful mining.
 
 ### Consensus
 - `ConsensusEngine.java`: Abstract interface for consensus logic, with methods for block validation and mining (to be implemented by users).
@@ -42,7 +42,7 @@ A minimal, modular blockchain skeleton in Java — providing only core interface
 - `WalletStore.java`: Manages wallet references only; no example wallets included.
 
 ### API
-- `RestApiServer.java`: Minimal HTTP API exposing `/chain`, `/transaction`, and `/peers` endpoints for blockchain state, transaction submission, and peer listing.
+- `RestApiServer.java`: Minimal HTTP API exposing `/chain`, `/transaction`, and `/peers` endpoints for blockchain state, transaction submission, and peer listing. Manages a list of miners and starts/stops their mining process when the server starts/stops. Transaction deserialization for `/transaction` is user-implemented.
 
 ---
 
