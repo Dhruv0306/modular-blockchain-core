@@ -1,8 +1,11 @@
 package com.modular.blockchain.api;
 
 import com.modular.blockchain.blockchain.Blockchain;
+import com.modular.blockchain.blockchain.Miner;
 import com.modular.blockchain.transaction.TransactionPool;
 import com.modular.blockchain.transaction.Transaction;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.IOException;
@@ -19,18 +22,21 @@ public class RestApiServer {
     private final Blockchain blockchain;
     private final TransactionPool transactionPool;
     private final HttpServer server;
+    private final List<Miner> miners;
 
     /**
      * Creates a new REST API server
      * @param blockchain The blockchain instance to expose
      * @param transactionPool The transaction pool to expose
      * @param port The port to listen on
+     * @param miners List of miners to expose
      * @throws IOException If the server cannot be created
      */
-    public RestApiServer(Blockchain blockchain, TransactionPool transactionPool, int port) throws IOException {
+    public RestApiServer(Blockchain blockchain, TransactionPool transactionPool, ArrayList<Miner> miners, int port) throws IOException {
         this.blockchain = blockchain;
         this.transactionPool = transactionPool;
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
+        this.miners = miners;
         setupEndpoints();
     }
 
@@ -102,6 +108,9 @@ public class RestApiServer {
      */
     public void start() {
         server.start();
+        for (Miner miner : miners) {
+            miner.startMining(2); // Start mining every two minutes
+        }
     }
 
     /**
@@ -109,5 +118,8 @@ public class RestApiServer {
      */
     public void stop() {
         server.stop(0);
+        for(Miner miner : miners){
+            miner.stopMining();
+        }
     }
 }

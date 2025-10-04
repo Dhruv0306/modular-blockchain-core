@@ -6,6 +6,8 @@ import com.modular.blockchain.transaction.Transaction;
 import com.modular.blockchain.transaction.TransactionPool;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Represents a miner in the blockchain network that is responsible for creating new blocks
@@ -17,6 +19,7 @@ public class Miner {
     private final ConsensusEngine consensusEngine;
     private final String minerId;
     private final int miningThreshold;
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     /**
      * Constructs a new Miner instance.
@@ -33,6 +36,23 @@ public class Miner {
         this.pool = pool;
         this.blockchain = blockchain;
         this.consensusEngine = consensusEngine;
+    }
+
+    /**
+     * Starts the mining process, which periodically checks the transaction pool
+     * and attempts to mine new blocks if enough transactions are available.
+     *
+     * @param minutes Interval in minutes to check the transaction pool
+     */
+    public void startMining(int minutes) {
+        service.scheduleAtFixedRate(this::checkAndMine, 0, minutes, java.util.concurrent.TimeUnit.MINUTES);
+    }
+
+    /**
+     * Stops the mining process.
+     */
+    public void stopMining() {
+        service.shutdown();
     }
 
     /**
