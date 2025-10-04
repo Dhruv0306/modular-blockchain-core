@@ -42,7 +42,10 @@ A minimal, modular blockchain skeleton in Java — providing only core interface
 - `WalletStore.java`: Manages wallet references only; no example wallets included.
 
 ### API
-- `RestApiServer.java`: Minimal HTTP API exposing `/chain`, `/transaction`, and `/peers` endpoints for blockchain state, transaction submission, and peer listing. Manages a list of miners and starts/stops their mining process when the server starts/stops. Transaction deserialization for `/transaction` is user-implemented.
+- `RestApiServer.java`: Minimal HTTP API exposing `/chain`, `/transaction`, and `/peers` endpoints for blockchain state, transaction submission, and peer listing. No longer manages miners or their mining process; miner management is now handled in the main application entry point. Transaction deserialization for `/transaction` is user-implemented.
+
+### Application Entry Point
+- `Main.java`: The main application entry point. Handles configuration, initializes the blockchain, transaction pool, consensus engine, wallet, miners, and starts the REST API server. Manages miner lifecycle and graceful shutdown.
 
 ---
 
@@ -64,9 +67,46 @@ A minimal, modular blockchain skeleton in Java — providing only core interface
 
 ## Getting Started
 
-1. Implement your own `Transaction`, `Wallet`, and `ConsensusEngine` classes.
-2. Wire them into the provided infrastructure (blockchain, miner, networking, API).
-3. Extend or replace stubs as needed for your use case.
+Before running the application, you must provide your own implementations for the following:
+
+- `Transaction` (extend the abstract interface for your transaction logic)
+- `Wallet` (extend the abstract class for your wallet logic)
+- `ConsensusEngine` (implement your consensus mechanism)
+
+### 1. Plug in your Implementations
+
+Open `src/main/java/com/modular/blockchain/Main.java` and update the following lines:
+
+```java
+// 1. ConsensusEngine implementation
+ConsensusEngine consensusEngine = null; // TODO: Replace with actual implementation
+// 2. Wallet implementation
+Wallet wallet = null; // TODO: Replace with actual implementation
+```
+
+Replace the `null` assignments with your own classes, for example:
+
+```java
+ConsensusEngine consensusEngine = new MyConsensusEngine();
+Wallet wallet = new MyWallet();
+```
+
+Also ensure your `Transaction` implementation is used wherever transactions are created or deserialized.
+
+### 2. Build and Run
+
+After updating `Main.java` with your implementations:
+
+- Build the project using Maven:
+  ```
+  mvn compile
+  ```
+- Run the application:
+  ```
+  mvn exec:java -Dexec.mainClass="com.modular.blockchain.Main"
+  ```
+
+This will start the REST API server and miners as configured in `Main.java`.
 
 ---
 
