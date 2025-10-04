@@ -9,6 +9,7 @@ A minimal, modular blockchain skeleton in Java — providing only core interface
 - **Modular, extensible design**: All core blockchain infrastructure is provided, but consensus, wallet, and transaction logic are left abstract for user extension.
 - **No example or placeholder implementations**: Only interfaces and abstract classes for extension points.
 - **Ready-to-use infrastructure**: Includes block, blockchain, miner, crypto utilities, transaction pool, networking stubs, and a minimal REST API.
+- **Lightweight logging**: All core modules use a simple Logger utility for INFO, ERROR, and DEBUG messages to aid debugging and traceability.
 
 ---
 
@@ -46,6 +47,24 @@ A minimal, modular blockchain skeleton in Java — providing only core interface
 
 ### Application Entry Point
 - `Main.java`: The main application entry point. Handles configuration, initializes the blockchain, transaction pool, consensus engine, wallet, miners, and starts the REST API server. Manages miner lifecycle and graceful shutdown.
+
+---
+
+## Logging
+
+A lightweight Logger utility is included and integrated across all core modules. It provides timestamped INFO, ERROR, and DEBUG messages to the console for easier debugging and traceability.
+
+**Logger usage example:**
+
+```java
+import com.modular.blockchain.util.Logger;
+
+Logger.info("Blockchain started");
+Logger.error("Failed to add block");
+Logger.debug("Transaction pool size: " + pool.getBatch(10).size());
+```
+
+All major actions, errors, and important events in the blockchain, networking, transaction, and wallet modules are now logged using this utility.
 
 ---
 
