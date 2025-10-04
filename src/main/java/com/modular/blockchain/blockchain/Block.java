@@ -2,6 +2,7 @@ package com.modular.blockchain.blockchain;
 
 import com.modular.blockchain.transaction.Transaction;
 import com.modular.blockchain.crypto.CryptoUtils;
+import com.modular.blockchain.util.Logger;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class Block {
      * @param minerId The ID of the miner who created this block
      */
     public Block(int index, long timestamp, List<Transaction> transactions, String previousHash, String minerId) {
+        Logger.info("Creating new block at index " + index + ", miner: " + minerId);
         this.index = index;
         this.timestamp = timestamp;
         this.transactions = transactions;
@@ -47,11 +49,20 @@ public class Block {
      * @param difficulty The number of leading zeros required in the hash
      */
     public void mineBlock(int difficulty) {
+        Logger.info("Mining block at index " + index + " with difficulty " + difficulty);
         String target = new String(new char[difficulty]).replace('\0', '0');
-        while (!hash.substring(0, difficulty).equals(target)) {
+        while (true) {
+            this.hash = BlockUtils.calculateHash(header, transactions);
+            if (hash.substring(0, difficulty).equals(target)) {
+                Logger.info("Block mined! Hash: " + hash);
+                break;
+            }
             nonce++;
             header.setNonce(nonce);
-            hash = BlockUtils.calculateHash(getHeader(), getTransactions());
+            // Optionally, log every N iterations for debug
+            if (nonce % 1000000 == 0) {
+                Logger.debug("Still mining block at index " + index + ", nonce: " + nonce);
+            }
         }
     }
 

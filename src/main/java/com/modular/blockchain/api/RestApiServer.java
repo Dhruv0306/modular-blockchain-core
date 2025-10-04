@@ -3,6 +3,7 @@ package com.modular.blockchain.api;
 import com.modular.blockchain.blockchain.Blockchain;
 import com.modular.blockchain.blockchain.Miner;
 import com.modular.blockchain.transaction.TransactionPool;
+import com.modular.blockchain.util.Logger;
 
 import java.util.List;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class RestApiServer {
      * @throws IOException If the server cannot be created
      */
     public RestApiServer(Blockchain blockchain, TransactionPool transactionPool, int port) throws IOException {
+        Logger.info("Initializing REST API server on port: " + port);
         this.blockchain = blockchain;
         this.transactionPool = transactionPool;
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -41,6 +43,7 @@ public class RestApiServer {
         server.createContext("/chain", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
+                Logger.debug("Received /chain request: " + exchange.getRequestMethod());
                 if ("GET".equals(exchange.getRequestMethod())) {
                     String response = blockchainToJson();
                     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
@@ -55,10 +58,11 @@ public class RestApiServer {
         server.createContext("/transaction", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
+                Logger.debug("Received /transaction request: " + exchange.getRequestMethod());
                 if ("POST".equals(exchange.getRequestMethod())) {
-                    // For demo: just read all bytes and treat as a string (user must implement Transaction deserialization)
                     byte[] body = exchange.getRequestBody().readAllBytes();
                     String txJson = new String(body, StandardCharsets.UTF_8);
+                    Logger.info("Transaction received: " + txJson);
                     // Transaction deserialization is user-implemented; here we just log or ignore
                     // transactionPool.addTransaction(userDeserializedTransaction);
                     exchange.sendResponseHeaders(200, 0);
@@ -73,8 +77,8 @@ public class RestApiServer {
         server.createContext("/peers", new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
+                Logger.debug("Received /peers request: " + exchange.getRequestMethod());
                 if ("GET".equals(exchange.getRequestMethod())) {
-                    // For demo: return empty peer list (user should implement proper peer management)
                     String response = "[]";
                     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
                     exchange.getResponseBody().write(response.getBytes(StandardCharsets.UTF_8));
@@ -101,6 +105,7 @@ public class RestApiServer {
      * Starts the API server
      */
     public void start() {
+        Logger.info("Starting REST API server");
         server.start();
     }
 
@@ -108,6 +113,7 @@ public class RestApiServer {
      * Stops the API server
      */
     public void stop() {
+        Logger.info("Stopping REST API server");
         server.stop(0);
     }
 }

@@ -1,5 +1,6 @@
 package com.modular.blockchain.crypto;
 
+import com.modular.blockchain.util.Logger;
 import java.security.*;
 import java.util.Base64;
 
@@ -16,6 +17,7 @@ public class CryptoUtils {
      */
     public static String sha256(String input) {
         try {
+            Logger.debug("Hashing input with SHA-256");
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes());
             StringBuilder hexString = new StringBuilder();
@@ -26,6 +28,7 @@ public class CryptoUtils {
             }
             return hexString.toString();
         } catch (Exception e) {
+            Logger.error("SHA-256 hashing failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -37,10 +40,12 @@ public class CryptoUtils {
      */
     public static KeyPair generateKeyPair() {
         try {
+            Logger.info("Generating new RSA key pair");
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
             return keyGen.generateKeyPair();
         } catch (Exception e) {
+            Logger.error("Key pair generation failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -59,6 +64,7 @@ public class CryptoUtils {
             signer.update(data);
             return signer.sign();
         } catch (Exception e) {
+            Logger.error("Signing data failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -78,6 +84,7 @@ public class CryptoUtils {
             verifier.update(data);
             return verifier.verify(signature);
         } catch (Exception e) {
+            Logger.error("Verification of signature failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

@@ -6,13 +6,14 @@ import com.modular.blockchain.blockchain.Miner;
 import com.modular.blockchain.consensus.ConsensusEngine;
 import com.modular.blockchain.transaction.TransactionPool;
 import com.modular.blockchain.wallet.Wallet;
+import com.modular.blockchain.util.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        System.out.println("Modular Blockchain");
+        Logger.info("Modular Blockchain starting up");
         // -- Configuration and initialization code would go here --
         int difficulty = 4; // Example difficulty level
         int port = 8080; // Example port number
@@ -30,26 +31,34 @@ public class Main {
 
         // --- CORE COMPONENTS ---
         Blockchain blockchain = new Blockchain(difficulty); // Blockchain with specified difficulty
+        Logger.info("Blockchain initialized with difficulty: " + difficulty);
         TransactionPool pool = new TransactionPool(); // Transaction pool
+        Logger.info("Transaction pool created");
 
         // Create Miners
         for(String minerId : minerIds){
             Miner miner = new Miner(minerId, miningThreshold, pool, blockchain, consensusEngine); // Create a miner
             miners.add(miner);
+            Logger.info("Miner created: " + minerId);
         }
 
         // RestAPI server starter
         RestApiServer server = new RestApiServer(blockchain, pool, port);
+        Logger.info("REST API server initialized on port: " + port);
         server.start();
+        Logger.info("REST API server started");
 
         // Start miners
-        miners.forEach(miner -> miner.startMining(miningInterval));
+        miners.forEach(miner -> {
+            Logger.info("Starting mining for miner: " + miner.getMinerId());
+            miner.startMining(miningInterval);
+        });
 
         // Add shutdown hook for graceful exit
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             server.stop();
             miners.forEach(Miner::stopMining);
-            System.out.println("Server and miners stopped.");
+            Logger.info("Server and miners stopped.");
         }));
     }
 }

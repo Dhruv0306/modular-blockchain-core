@@ -1,5 +1,6 @@
 package com.modular.blockchain.transaction;
 
+import com.modular.blockchain.util.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,12 @@ public class TransactionPool {
      * @param tx The transaction to add to the pool
      */
     public synchronized void addTransaction(Transaction tx) {
-        if (tx.isValid()) pendingTransactions.add(tx);
+        if (tx.isValid()) {
+            pendingTransactions.add(tx);
+            Logger.info("Transaction added to pool: " + tx.getId());
+        } else {
+            Logger.error("Invalid transaction rejected: " + tx.getId());
+        }
     }
 
     /**
@@ -29,8 +35,12 @@ public class TransactionPool {
      * @return A list containing up to 'size' transactions, or an empty list if no transactions are pending
      */
     public synchronized List<Transaction> getBatch(int size) {
-        if (pendingTransactions.isEmpty()) return Collections.emptyList();
+        if (pendingTransactions.isEmpty()) {
+            Logger.debug("Transaction pool is empty when getBatch called");
+            return Collections.emptyList();
+        }
         int batchSize = Math.min(size, pendingTransactions.size());
+        Logger.debug("Retrieving batch of " + batchSize + " transactions from pool");
         return new ArrayList<>(pendingTransactions.subList(0, batchSize));
     }
 
@@ -42,5 +52,6 @@ public class TransactionPool {
      */
     public synchronized void removeTransactions(List<Transaction> txs) {
         pendingTransactions.removeAll(txs);
+        Logger.info("Removed " + txs.size() + " transactions from pool");
     }
 }

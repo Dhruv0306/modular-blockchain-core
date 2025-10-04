@@ -1,5 +1,6 @@
 package com.modular.blockchain.wallet;
 
+import com.modular.blockchain.util.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ public class WalletStore {
      */
     public void addWallet(Wallet w) {
         store.put(w.getUserId(), w);
+        Logger.info("Wallet added to store for user: " + w.getUserId());
     }
 
     /**
@@ -25,7 +27,13 @@ public class WalletStore {
      * @return The wallet object if found, null otherwise
      */
     public Wallet getWallet(String userId) {
-        return store.get(userId);
+        Wallet wallet = store.get(userId);
+        if (wallet != null) {
+            Logger.debug("Wallet retrieved for user: " + userId);
+        } else {
+            Logger.error("Wallet not found for user: " + userId);
+        }
+        return wallet;
     }
 
     /**
@@ -34,5 +42,6 @@ public class WalletStore {
      */
     public void removeWallet(String userId) {
         store.remove(userId);
+        Logger.info("Wallet removed from store for user: " + userId);
     }
 }

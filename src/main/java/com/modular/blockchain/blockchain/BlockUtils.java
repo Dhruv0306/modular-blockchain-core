@@ -2,6 +2,7 @@ package com.modular.blockchain.blockchain;
 
 import com.modular.blockchain.crypto.CryptoUtils;
 import com.modular.blockchain.transaction.Transaction;
+import com.modular.blockchain.util.Logger;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,11 +18,14 @@ public class BlockUtils {
      * @return SHA-256 hash of the block data
      */
     static String calculateHash(BlockHeader header, List<Transaction> transactions) {
+        Logger.debug("Calculating hash for block header: index=" + header.toString());
         String dataToHash = header.toString() +
                 transactions.stream()
                         .map(Transaction::toJson)
                         .collect(Collectors.joining());
-        return CryptoUtils.sha256(dataToHash);
+        String hash = CryptoUtils.sha256(dataToHash);
+        Logger.debug("Calculated hash: " + hash);
+        return hash;
     }
 
     /**
@@ -32,7 +36,11 @@ public class BlockUtils {
      */
     static boolean isHashValid(String hash, int difficulty) {
         String target = new String(new char[difficulty]).replace('\0', '0');
-        return hash.substring(0, difficulty).equals(target);
+        boolean valid = hash.substring(0, difficulty).equals(target);
+        if (!valid) {
+            Logger.debug("Hash does not meet difficulty: " + hash + ", difficulty: " + difficulty);
+        }
+        return valid;
     }
 
     /**
@@ -41,6 +49,7 @@ public class BlockUtils {
      * @return Formatted string containing block details
      */
     static String prettyPrint(Block block) {
+        Logger.debug("Pretty printing block at index: " + block.getIndex());
         return "Block{" +
                 "index=" + block.getIndex() +
                 ", timestamp=" + block.getTimestamp() +

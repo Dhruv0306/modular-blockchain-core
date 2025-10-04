@@ -2,6 +2,7 @@ package com.modular.blockchain.networking;
 
 import com.modular.blockchain.blockchain.Block;
 import com.modular.blockchain.transaction.Transaction;
+import com.modular.blockchain.util.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class NetworkService {
      * @param block The block to broadcast
      */
     public void broadcastBlock(Block block) {
-        System.out.println("[NetworkService] Broadcasting block: " + block.getHash());
+        Logger.info("[NetworkService] Broadcasting block: " + block.getHash());
     }
 
     /**
@@ -26,7 +27,7 @@ public class NetworkService {
      * @param tx The transaction to broadcast
      */
     public void broadcastTransaction(Transaction tx) {
-        System.out.println("[NetworkService] Broadcasting transaction: " + tx.getId());
+        Logger.info("[NetworkService] Broadcasting transaction: " + tx.getId());
     }
 
     /**
@@ -35,7 +36,7 @@ public class NetworkService {
      */
     public void addPeer(Peer peer) {
         peers.add(peer);
-        System.out.println("[NetworkService] Added peer: " + peer.getId());
+        Logger.info("[NetworkService] Added peer: " + peer.getId());
     }
 
     /**
@@ -48,10 +49,10 @@ public class NetworkService {
 
     /**
      * Removes a peer from the network.
-     * @param peer The peer to remove from the network
+     * @param peer The peer to remove
      */
     public void removePeer(Peer peer) {
         peers.remove(peer);
-        System.out.println("[NetworkService] Removed peer: " + peer.getId());
+        Logger.info("[NetworkService] Removed peer: " + peer.getId());
     }
 }

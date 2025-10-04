@@ -1,5 +1,7 @@
 package com.modular.blockchain.networking;
 
+import com.modular.blockchain.util.Logger;
+
 /**
  * Represents a peer node in the blockchain network.
  * Contains identification and network location information for a peer.
@@ -21,6 +23,7 @@ public class Peer {
      * @param port Port number the peer is listening on
      */
     public Peer(String id, String address, int port) {
+        Logger.info("Peer created: id=" + id + ", address=" + address + ", port=" + port);
         this.id = id;
         this.address = address;
         this.port = port;
@@ -39,6 +42,7 @@ public class Peer {
      * @param id The ID to set
      */
     public void setId(String id) {
+        Logger.debug("Peer id updated from " + this.id + " to " + id);
         this.id = id;
     }
 
@@ -55,6 +59,7 @@ public class Peer {
      * @param address The address to set
      */
     public void setAddress(String address) {
+        Logger.debug("Peer address updated from " + this.address + " to " + address);
         this.address = address;
     }
 
@@ -71,6 +76,7 @@ public class Peer {
      * @param port The port to set
      */
     public void setPort(int port) {
+        Logger.debug("Peer port updated from " + this.port + " to " + port);
         this.port = port;
     }
 

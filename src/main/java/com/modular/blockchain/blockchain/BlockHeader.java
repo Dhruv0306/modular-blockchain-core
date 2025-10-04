@@ -1,5 +1,7 @@
 package com.modular.blockchain.blockchain;
 
+import com.modular.blockchain.util.Logger;
+
 /**
  * Represents the header of a block in the blockchain.
  * Contains essential metadata about the block including its position, timestamp,
@@ -30,6 +32,7 @@ public class BlockHeader {
      * @param minerId ID of the miner who created this block
      */
     public BlockHeader(int index, long timestamp, String previousHash, String merkleRoot, int nonce, String minerId) {
+        Logger.debug("Creating BlockHeader: index=" + index + ", minerId=" + minerId);
         this.index = index;
         this.timestamp = timestamp;
         this.previousHash = previousHash;
@@ -45,6 +48,7 @@ public class BlockHeader {
      * @param nonce The new nonce value
      */
     public void setNonce(int nonce) {
+        Logger.debug("BlockHeader nonce updated: index=" + index + ", new nonce=" + nonce);
         this.nonce = nonce;
     }
 

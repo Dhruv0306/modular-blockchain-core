@@ -4,6 +4,7 @@ import com.modular.blockchain.consensus.ConsensusEngine;
 import com.modular.blockchain.consensus.ConsensusResult;
 import com.modular.blockchain.transaction.Transaction;
 import com.modular.blockchain.transaction.TransactionPool;
+import com.modular.blockchain.util.Logger;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ public class Miner {
      * @param consensusEngine Engine used to validate blocks and achieve consensus
      */
     public Miner(String minerId, int miningThreshold, TransactionPool pool, Blockchain blockchain, ConsensusEngine consensusEngine) {
+        Logger.info("Miner created: " + minerId);
         this.minerId = minerId;
         this.miningThreshold = miningThreshold;
         this.pool = pool;
@@ -45,6 +47,7 @@ public class Miner {
      * @param minutes Interval in minutes to check the transaction pool
      */
     public void startMining(int minutes) {
+        Logger.info("Miner " + minerId + " started mining with interval: " + minutes + " minutes");
         service.scheduleAtFixedRate(this::checkAndMine, 0, minutes, java.util.concurrent.TimeUnit.MINUTES);
     }
 
@@ -52,39 +55,37 @@ public class Miner {
      * Stops the mining process.
      */
     public void stopMining() {
-        service.shutdown();
+        Logger.info("Miner " + minerId + " stopped mining");
+        service.shutdownNow();
     }
 
     /**
-     * Checks the transaction pool and attempts to mine a new block if enough transactions are present.
-     * The block is only added to the blockchain if it passes consensus validation.
+     * Checks the transaction pool and mines a new block if enough transactions are available.
      */
-    public void checkAndMine() {
-        List<Transaction> batch = pool.getBatch(miningThreshold);
-        if (batch == null || batch.isEmpty()) {
-            return; // Nothing to mine
+    private void checkAndMine() {
+        try {
+            Logger.debug("Miner " + minerId + " checking transaction pool");
+            List<Transaction> batch = pool.getBatch(miningThreshold);
+            if (batch.size() >= miningThreshold) {
+                Logger.info("Miner " + minerId + " found " + batch.size() + " transactions, mining new block");
+                Block newBlock = new Block(blockchain.getChain().size(), System.currentTimeMillis(), batch, blockchain.getChain().getLast().getHash(), minerId);
+                newBlock.mineBlock(blockchain.getDifficulty());
+                ConsensusResult result = consensusEngine.validateBlock(newBlock, blockchain);
+                if (result.isSuccess()) {
+                    blockchain.addBlock(newBlock);
+                    Logger.info("Miner " + minerId + " successfully mined and added a new block: " + newBlock.getHash());
+                } else {
+                    Logger.error("Consensus failed for new block by miner " + minerId + ": " + result.getMessage());
+                }
+            } else {
+                Logger.debug("Miner " + minerId + " found insufficient transactions to mine a block");
+            }
+        } catch (Exception e) {
+            Logger.error("Error during mining by miner " + minerId + ": " + e.getMessage());
         }
-        Block newBlock = assembleBlock(batch);
-        ConsensusResult result = consensusEngine.validateBlock(consensusEngine.mineBlock(batch, blockchain,minerId), blockchain);
-        if (result != null && result.isSuccess()) {
-            blockchain.addBlock(newBlock);
-            pool.removeTransactions(batch);
-            // Optionally: broadcast the new block here
-        }
-        // else: consensus failed, do not add block
     }
 
-    /**
-     * Assembles a new block from a batch of transactions.
-     *
-     * @param batch List of transactions to include in the block
-     * @return A new Block instance containing the provided transactions
-     */
-    public Block assembleBlock(List<Transaction> batch) {
-        Block latest = blockchain.getLatestBlock();
-        int newIndex = latest.getIndex() + 1;
-        long timestamp = System.currentTimeMillis();
-        String previousHash = latest.getHash();
-        return new Block(newIndex, timestamp, batch, previousHash, minerId);
+    public String getMinerId() {
+        return minerId;
     }
 }

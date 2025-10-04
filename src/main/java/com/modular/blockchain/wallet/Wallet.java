@@ -6,6 +6,7 @@ package com.modular.blockchain.wallet;
 
 import com.modular.blockchain.crypto.KeyPairInfo;
 import com.modular.blockchain.transaction.Transaction;
+import com.modular.blockchain.util.Logger;
 
 public abstract class Wallet {
     /** User identifier associated with this wallet */
@@ -20,6 +21,7 @@ public abstract class Wallet {
      * @param keys Cryptographic key pair information
      */
     public Wallet(String userId, KeyPairInfo keys) {
+        Logger.info("Wallet created for user: " + userId);
         this.userId = userId;
         this.keys = keys;
     }
