@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.modular</groupId>
-    <artifactId>blockchain-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <artifactId>modular-blockchain-core</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <name>modular-blockchain-core</name>
     <description>Minimal modular blockchain skeleton in Java</description>
     <url>https://github.com/Dhruv0306/modular-blockchain-core</url>
